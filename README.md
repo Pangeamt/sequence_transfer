@@ -1,5 +1,6 @@
 # Sequence transfer
 
+The sequence transfer library is 
 ## Requirements
 python 3.7
 
@@ -19,16 +20,10 @@ source venv/bin/activate
 
 Install requirements
 ```BASH
-pip install -r requirements.py
+pip install -r requirements.txt
 ```
 
-## Usage
-First, install some libraries that will be used in this example
-
+Install sequence_transfer
 ```BASH
-pip install sacremoses
-pip install bert-tensorflow
-pip install tensorflow==1.15.2
+python setup.py install
 ```
-
-This library is alfa

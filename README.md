@@ -10,19 +10,23 @@ text = '  I live in  Lindström ! '
 moses_tokens = TokenSeqence.new(['I', 'live', 'in', 'Lindström', '!']) 
 bert_tokens = TokenSeqence.new((['i', 'live', 'in', 'li', '##nds', '##tro', '##m', '!'])
 
-# We create a transfer function and we can find the BERT tokens that correspond to the 4th Moses token 'Lindström' 
+# We create a transfer function
 transfer = MagicTransfer(moses_tokens, bert_tokens)
-print(transfer.apply(moses_tokens[3]))
-# -->  ['li', '##nds', '##tro', '##m']
-```
 
-if we want to see all the transfers together:
-```python
+# Now we can find the BERT tokens that correspond to the 4th Moses token 'Lindström' 
+transfered = transfer.apply(moses_tokens[3])
+
+print(transfered)
+# --->  ['li', '##nds', '##tro', '##m']
+
+print(f"Start:  {transfered.start} Stop: {transferred.stop})
+
+# If we want to see the full mapping:
 transfer.debug()
+
 ```
-+-----------+-----------+-----------+------+----------+-----------+-----------+
 | SRC SLICE | INDEX SRC |  TEXT SRC |      | TEXT TGT | INDEX TGT | TGT SLICE |
-+-----------+-----------+-----------+------+----------+-----------+-----------+
+| ----------| --------- | --------- | ---- | -------- | ----------| ----------|
 |   [0:1]   |     0     |     I     | ---> |    i     |     0     |   [0:1]   |
 |   [1:2]   |     1     |    live   | ---> |   live   |     1     |   [1:2]   |
 |   [2:3]   |     2     |     in    | ---> |    in    |     2     |   [2:3]   |
@@ -31,7 +35,7 @@ transfer.debug()
 |           |           |           |      |  ##tro   |     5     |           |
 |           |           |           |      |   ##m    |     6     |           |
 |   [4:5]   |     4     |     !     | ---> |    !     |     7     |   [7:8]   |
-+-----------+-----------+-----------+------+----------+-----------+-----------+
+
 ``` 
  
 ## Requirements

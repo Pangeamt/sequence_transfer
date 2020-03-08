@@ -27,7 +27,7 @@ print(f"Starts at: {transfered.start} and stops before: {transferred.stop}"
 To see the full mapping:
 
 ```python
-# Print the table nelow
+# Print the table below
 transfer.debug()
 ```
 
@@ -41,6 +41,7 @@ transfer.debug()
 |           |           |           |      |  ##tro   |     5     |           |
 |           |           |           |      |   ##m    |     6     |           |
 |   [4:5]   |     4     |     !     | ---> |    !     |     7     |   [7:8]   |
+
 
 
 ## The sequence transfer library
@@ -59,9 +60,12 @@ After the renormalization process, both texts tend to be very similar so we use 
 
 Then it is mathematics:
 - if f1, f2, .., fn are the transfer functions for the normalization of the source
-- if g1, g2, .., gn are  the transfer functions for the normalization of the tokenized text
+- if g1, g2, .., gn are  the transfer functions for the renormalization of the tokenized text
 - if h is the LSC transfer
 - Then MagicTransfer = Compose(Compose(f1, f2, ...fn), h , Inverse(Compose(g1, g2, ..., gn)))
+
+At this moment, the MagicTransfer function use only 4 normalizers but we will add more in a near future.
+
 
 
 ## Installation

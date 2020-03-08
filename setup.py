@@ -10,7 +10,7 @@ setup(
     author_email='l.bie@pangeanic.com',
     license='BSD 2-clause',
     packages=['sequence_transfer', 'sequence_transfer.normalizer'],
-    install_requires=['colorama'],
+    install_requires=['colorama', 'PrettyTable'],
 
     classifiers=[
         'Development Status :: 1 - Planning',

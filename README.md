@@ -2,19 +2,24 @@
 
 The sequence transfer library is part of the MAPA anonymisation project funded by the European Commission.
 
-Right to the code:
 ```python
-# a simple sentence
+# A simple sentence
 text = '  I live in  Lindström ! '  
 
-# Tokens produced by Moses and BERT
-moses_tokens = ['I', 'live', 'in', 'Lindström', '!'] # Tokenized with Moses
-bert_tokens = ['i', 'live', 'in', 'li', '##nds', '##tro', '##m', '!']  # Tokenized with BERT
+# We create TokenSeqence from tokens produced by Moses and BERT
+moses_tokens = TokenSeqence.new(['I', 'live', 'in', 'Lindström', '!']) 
+bert_tokens = TokenSeqence.new((['i', 'live', 'in', 'li', '##nds', '##tro', '##m', '!'])
 
-# Now, if we want to map Moses and BERT tokens 
+# We create a transfer function and we can find the BERT tokens that correspond to the 4th Moses token 'Lindström' 
 transfer = MagicTransfer(moses_tokens, bert_tokens)
-transfer.debug()
+print(transfer.apply(moses_tokens[3]))
+# -->  ['li', '##nds', '##tro', '##m']
+```
 
+if we want to see all the transfers together:
+```python
+transfer.debug()
+```
 +-----------+-----------+-----------+------+----------+-----------+-----------+
 | SRC SLICE | INDEX SRC |  TEXT SRC |      | TEXT TGT | INDEX TGT | TGT SLICE |
 +-----------+-----------+-----------+------+----------+-----------+-----------+

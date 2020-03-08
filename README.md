@@ -66,7 +66,7 @@ Then it is mathematics:
 
 At this moment, the MagicTransfer function use only 4 normalizers but we will add more in a near future.
 
-
+Note for developers: The transfer functions are not letter to letter functions but slice to slice functions. Just observe in the debug table that the slice [3:4] is transferred to the slice [3:7]. Slices are sequences and "sequence" is the term used in the source code of the library. My preferred notation for a slice or a sequence is [n p[ reflecting the antisymmetry between the status of both numbers. [n n[ start with n, but ends before n. It is empty, but positioned!. 
 
 ## Installation
 

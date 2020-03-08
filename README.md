@@ -24,13 +24,12 @@ print(transfered)
 print(f"Starts at: {transfered.start} and stops before: {transferred.stop}"
 # --->  "Starts at: 3 and stops before: 7
 ```
-If we want to see the full mapping:
+To see the full mapping:
 
 ```python
+# Print the table nelow
 transfer.debug()
 ```
-
-will print a table like this:
 
 | src slice | src index |  src text |      | tgt text | tgt index | tgt slice |
 | ----------| --------- | --------- | ---- | -------- | ----------| ----------|
@@ -43,12 +42,26 @@ will print a table like this:
 |           |           |           |      |   ##m    |     6     |           |
 |   [4:5]   |     4     |     !     | ---> |    !     |     7     |   [7:8]   |
 
+
 ## The sequence transfer library
 
-What we have done between tokens can be achieved between tokens and the text source. So it's possible to find the offsets of any text (in the source) corresonding to any sequence or subseqeunce of tokens. 
+What we have done between tokens can be achieved between tokens and the text source itself and it is possible to find, in the source the offsets of the text corresponding to any sequence or subsequence of tokens.
 
+We are working on a multilevel BILUO annotation transfer function that will be able to transfer BILUO codes from tokens to the appropriate letters of the source. That means that we will be able to annotate a text, letter by letter, without altering it at all (even a space).
 
-The MagicTransfer is one of the multiple transfers function available on the library. They are composable and reversible
+The MagicTransfer is one of the multiple transfer functions available on the library. They are composable and reversible.
+The "Magic" transfer is still in BETA and have to be tested. Nevertheless, because of his architecture we think that it should be quite strong very soon.
+
+### The magic transfer architecture
+The Magic transfer is based on a supervised renormalization of both text, source and tokenized. Supervised means that each renormalization function return a transfer function that track the changes they made.
+
+After the renormalization process, both texts tend to be very similar so we use what git use to detect changes in code: the LCS algorithm and detect the most longest common subsequence of these two texts and convert that result to another transfer function.
+
+Then it is mathematics:
+- if f1, f2, .., fn are the transfer functions for the normalization of the source
+- if g1, g2, .., gn are  the transfer functions for the normalization of the tokenized text
+- if h is the LSC transfer
+- Then MagicTransfer = Compose(Compose(f1, f2, ...fn), h , Inverse(Compose(g1, g2, ..., gn)))
 
 
 ## Installation

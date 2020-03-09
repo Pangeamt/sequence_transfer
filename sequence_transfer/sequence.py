@@ -1,4 +1,4 @@
-from typing import List, Optional, Union, Any
+from typing import List, Tuple, Optional, Union, Any
 from colorama import Fore, Style
 from sequence_transfer.sequence_element import Token, Char, BILUOAnnotation
 
@@ -128,7 +128,7 @@ class Sequence:
 
     def __iter__(self):
         sequence_type = type(self)
-        return iter([sequence_type(i, context=self._context) for i in self.iter_index()])
+        return iter([sequence_type(i, i+1, context=self._context) for i in self.iter_index()])
 
     def __len__(self):
         return self._size
@@ -202,6 +202,8 @@ class SequenceContext:
         return self._context
     context = property(get_context)
 
+    def materialize_sequence(self, sequence:Sequence) -> List:
+        return self._context[sequence.start:sequence.stop]
 
 class TextualSequenceContext(SequenceContext):
     def get_sequence_text(self, sequence) -> str:
@@ -255,10 +257,16 @@ class BILUOAnnotationSequenceContext(SequenceContext):
         super().__init__(context)
 
 
+
+
 # Special Sequences
 
+class ContextualizedSequence(Sequence):
+    def materialize(self):
+        return self._context.context[self.start: self.stop]
 
-class TextualSequence(Sequence):
+
+class TextualSequence(ContextualizedSequence):
     def in_context(self):
         return self._context.represent_sequence_in_context(self)
 
@@ -269,24 +277,34 @@ class TextualSequence(Sequence):
 
 class TokenSequence(TextualSequence):
     @staticmethod
-    def new(tokens: List[str]):
+    def new(tokens: List[str]) -> "TokenSequence":
         if type(tokens) is not list:
             raise ValueError(f"TokenSequence expect a list of string")
         return TokenSequence(0, len(tokens), TokenSequenceContext(list(map(lambda token: Token(token), tokens))))
 
+    def __init__(self, start: int, stop: Optional[int] = None, context: TokenSequenceContext=None):
+        super().__init__(start, stop, context)
+
 
 class CharSequence(TextualSequence):
     @staticmethod
-    def new(text: str):
+    def new(text: str) -> "CharSequence":
         if type(text) is not str:
             raise ValueError(f"CharSequence expect a string")
         return CharSequence(0, len(text), CharSequenceContext(list(map(lambda char: Char(char), text))))
 
+    def __init__(self, start: int, stop: Optional[int] = None, context: CharSequenceContext = None):
+        super().__init__(start, stop, context)
 
-class BILUOAnnotationSequence(Sequence):
+
+class BILUOAnnotationSequence(ContextualizedSequence):
     @staticmethod
-    def new(annotations: List[BILUOAnnotation]) -> Sequence:
+    def new(annotations: [Tuple[str, ...]]) -> "BILUOAnnotationSequence":
         if type(annotations) is not list:
             raise ValueError(f"BILUOAnnotationSequence expect a list")
+        annotations = list(map(lambda annotation: BILUOAnnotation.new(*annotation), annotations))
         return BILUOAnnotationSequence(0, len(annotations), BILUOAnnotationSequenceContext(annotations))
+
+    def __init__(self, start: int, stop: Optional[int], context: BILUOAnnotationSequenceContext):
+        super().__init__(start, stop, context)
 

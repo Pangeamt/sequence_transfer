@@ -18,10 +18,10 @@ def remove_whitespace(text: str) -> Tuple[str, SequenceTransfer]:
     transfers = []
     for i, char in enumerate(text):
         if not is_whitespace(char):
-            transfers.append((Sequence(i), Sequence(len(output))))
+            transfers.append((Sequence(i, i+1), Sequence(len(output), len(output) + 1)))
             output += char
         else:
-            transfers.append((Sequence(i), Sequence(len(output), len(output))))
+            transfers.append((Sequence(i, i+1), Sequence(len(output), len(output))))
     transfer = SequenceTransfer(
         Sequence(0, len(text)),
         Sequence(0, len(output)),

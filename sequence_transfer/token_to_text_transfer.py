@@ -9,7 +9,7 @@ def token_to_text_transfer(tokens: List[Token]):
     transfers = []
     for i, token in enumerate(tokens):
         transfers.append((
-            Sequence(i),
+            Sequence(i, i+1),
             Sequence(str_index, str_index + len(token))
         ))
         str_index += len(token)

@@ -8,6 +8,16 @@ class SequenceTransferException(Exception):
         super().__init__(msg)
 
 
+class SequenceTransferPlugin:
+    def apply(self, transfer: "Transfer", sequence: Sequence) -> Sequence:
+        """
+        :param transfer:
+        :param sequence:
+        :return:
+        """
+        pass
+
+
 class SequenceTransfer:
     def __init__(self,
                  source: Sequence,
@@ -17,7 +27,7 @@ class SequenceTransfer:
         :param source: for examples Sequence(0,6) = 0 1 2 3 4 5  = [0 6[  - Imagine string keys.
         :param target: for examples Sequence(0,10) = 0 1 2 3 4 5 6 7 8 9 = [0 10[
         :param matches: A list of pair of sub-sequences transfer that represents matches between source and target.
-        - Any sub-sequence_transfer in the source should have a size of 1 >
+        - not true now. [Any sub-sequence in the source should have a size of 1 >]
         - The sequences in source have to be ordered, adjacent and "cover" the entire source sequence.
         - the sequences in target have only to be ordered. Holes are possible...
         Now you can use the 'apply' function and "invert" the transfer
@@ -49,13 +59,13 @@ class SequenceTransfer:
                         f"the source sequence_transfer of the first match {source_sequence} "
                         f"should be at the beginning of the source")
             if i > 1:
-                previous_source_sequence = matches[i - 1][0]
+                previous_source_sequence = matches[i-1][0]
                 if previous_source_sequence.stop != source_sequence.start:
                     raise SequenceTransferException(
                         f"adjacency error in the source match list between index {i-1} and {i}:"
                         f" {previous_source_sequence}  {source_sequence}")
 
-                previous_target_sequence = matches[i - 1][1]
+                previous_target_sequence = matches[i-1][1]
                 if previous_target_sequence.stop > target_sequence.start:
                     raise SequenceTransferException(
                         f"order error in the target match list between index {i-1} and {i}:"
@@ -64,7 +74,8 @@ class SequenceTransfer:
             if i == len(matches)-1:
                 if source_sequence.stop != source.stop:
                     raise SequenceTransferException(
-                        f"the source sequence_transfer of the last match {source_sequence}  should stop at the end of the source")
+                        f"the source sequence_transfer of the last match {source_sequence}  should stop at the end of "
+                        f"the source")
 
             self._matches.append((source_sequence, target_sequence))
             if target_sequence.size:
@@ -78,11 +89,16 @@ class SequenceTransfer:
                 for j in source_sequence.iter_index():
                     self._index[j] = target_sequence
 
-    def apply(self, source_sequence: Sequence) -> Sequence:
+    def apply(self, source_sequence: Sequence, plugin: SequenceTransferPlugin = None) -> Sequence:
         """
         :param source_sequence: any sub-sequence of the source
+        :param plugin: SequenceTransferPlugin instance
         :return: transferred sub-sequence in the target
         """
+
+        if plugin is not None:
+            return plugin.apply(self, Sequence)
+
         source_sequence.raise_if_not_in(self._source)
 
         if source_sequence.size == 0 and source_sequence.start == self._source.start:
@@ -98,11 +114,8 @@ class SequenceTransfer:
         else:
             return Sequence.expand(
                 self._index[source_sequence.start],
-                self._index[source_sequence.stop - 1]
+                self._index[source_sequence.stop-1]
             )
-
-    def apply_alias(self, source_sequence: Sequence) -> Sequence:  # TODO Learn super()
-        return self.apply(source_sequence)
 
     def invert(self):
         return SequenceTransfer(
@@ -136,6 +149,10 @@ class SequenceTransfer:
         print(table)
 
     def _parallelize(self):
+        """
+        create an empty sequence on the source foreach hole in the target and add them to the list of matches
+        :return:
+        """
         parallel_matches = []
         for i, (source_sequence, target_sequence) in enumerate(self._matches):
             if i == 0:

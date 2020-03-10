@@ -1,19 +1,23 @@
-from typing import Union, List, Tuple
-from sequence_transfer.sequence_transfer import SequenceTransfer
-from sequence_transfer.sequence import TextualSequence
+from typing import Union, List, Tuple, Optional
+from sequence_transfer.sequence_transfer import SequenceTransfer, SequenceTransferPlugin
+from sequence_transfer.sequence import ContextualizedSequence
 from prettytable import PrettyTable
 
 
-class ContextualizedTransfer(SequenceTransfer):  # TODO: Think about a more appropriate name
+class ContextualizedTransfer(SequenceTransfer):
     def __init__(self,
-                 source: TextualSequence,
-                 target: TextualSequence,
-                 matches: List[Tuple[TextualSequence, TextualSequence]]):
+                 source: ContextualizedSequence,
+                 target: ContextualizedSequence,
+                 matches: List[Tuple[ContextualizedSequence, ContextualizedSequence]]):
         super().__init__(source, target, matches)
 
-    def apply(self, sequence: TextualSequence) -> TextualSequence:
+    def apply(self, sequence: ContextualizedSequence, plugin: Optional[SequenceTransferPlugin] = None) -> \
+            ContextualizedSequence:
+        if plugin is not None:
+            return plugin.apply(self, sequence)
+
         sequence_type = type(sequence)
-        transferred = super().apply(sequence)
+        transferred = super().apply(sequence, plugin)
         return sequence_type(transferred.start, transferred.stop, self._target.context)
 
     def invert(self):

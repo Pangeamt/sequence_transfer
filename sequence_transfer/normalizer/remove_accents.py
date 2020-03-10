@@ -18,7 +18,7 @@ def remove_accents(text: str) -> Tuple[str, SequenceTransfer]:
 
         else:
             transfers.append((
-                Sequence(i),
+                Sequence(i, i + 1),
                 Sequence(len(output), len(output) + len(without_accent))
             ))
         output += without_accent

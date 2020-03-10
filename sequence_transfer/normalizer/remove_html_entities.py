@@ -22,7 +22,6 @@ def remove_html_entities(text: str) -> Tuple[str, SequenceTransfer]:
 
     for i, char in enumerate(text):
         if counter:
-            print(counter, char)
             counter -= 1
         elif char == "&":
             is_html, fin = is_entity(text, i)
@@ -33,8 +32,6 @@ def remove_html_entities(text: str) -> Tuple[str, SequenceTransfer]:
         else:
             transfers.append((Sequence(i), Sequence(j)))
             j += 1
-
-    print(transfers, output)
 
     transfer = SequenceTransfer(
         Sequence(0, len(text)),

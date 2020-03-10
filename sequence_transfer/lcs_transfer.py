@@ -18,11 +18,17 @@ def lcs_transfer(x: str, y: str) -> SequenceTransfer:
                 L[i][j] = max(L[i - 1][j], L[i][j - 1])
 
     transfers = []
+    maybe_errors = []
+    last_value = L[m][n]
+
     while m > 0 and n > 0:
         max_neighbor = max(L[m - 1][n - 1], L[m][n - 1], L[m - 1][n])
         match = None
+        equivalent = last_value > max_neighbor
         if L[m - 1][n - 1] == max_neighbor:
             match = (Sequence(m - 1, m), Sequence(n - 1, n))
+            if not equivalent:
+                maybe_errors.append(((m - 1, m), (n - 1, n)))
             m = m - 1
             n = n - 1
         elif L[m][n - 1] == max_neighbor:
@@ -33,6 +39,7 @@ def lcs_transfer(x: str, y: str) -> SequenceTransfer:
             m = m - 1
         if match is not None:
             transfers.append(match)
+        last_value = max_neighbor
 
     while m > 0:
         match = (Sequence(m - 1, m), Sequence(n, n))
@@ -45,10 +52,13 @@ def lcs_transfer(x: str, y: str) -> SequenceTransfer:
     #     n -= 1
 
     transfers.reverse()
+    maybe_errors.reverse()
 
-    return SequenceTransfer(
-        Sequence(0, len(x)),
-        Sequence(0, len(y)),
-        transfers
+    return (
+        SequenceTransfer(
+            Sequence(0, len(x)),
+            Sequence(0, len(y)),
+            transfers
+        ),
+        tuple(maybe_errors)
     )
-

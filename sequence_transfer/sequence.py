@@ -1,6 +1,6 @@
 from typing import List, Tuple, Optional, Union, Any
 from colorama import Fore, Style
-from sequence_transfer.sequence_element import Token, Char, BILUOAnnotation
+from sequence_transfer.sequence_element import Token, Char
 
 
 #  Exceptions
@@ -30,13 +30,12 @@ class NotContextualizedSequenceException(Exception):
 
 
 class Sequence:
-    def __init__(self, start: int, stop: Optional[int] = None, context: "SequenceContext" = None):
+    def __init__(self, start: int, stop: int, context: "SequenceContext" = None):
         """
         A  sequence is a discrete interval, with the particularity of being closed on the left and open on the right.
 
         Let 's suppose a sequence of consecutive numbers: 3 4 5 6 7 8 9 10 11
         Sequence(4,7) =  4 5 6 = [4 7[ ... An sequence_transfer is open on the right so 7 is excluded!
-        Sequence(9) = 9 = [9 10[  ... It's a shortcut for Sequence(9,10)
         Sequence(4,4) = nothing = [4 4[ ... it's empty but positioned!
 
         :param start: Where the sequence start
@@ -44,8 +43,6 @@ class Sequence:
         :param context: The materialization of the sequence: A sequence of concrete things like chars, tokens
                 Important: A subsequence of a sequence share his context
         """
-        if stop is None:
-            stop = start + 1
         if stop < start:
             raise InvalidSequenceException(start, stop)
         self._start = start
@@ -191,7 +188,7 @@ class Sequence:
     context = property(get_context, set_context)
 
 
-#  Base contexts
+#  Contexts
 
 
 class SequenceContext:
@@ -202,15 +199,13 @@ class SequenceContext:
         return self._context
     context = property(get_context)
 
-    def materialize_sequence(self, sequence:Sequence) -> List:
+    def materialize_sequence(self, sequence: Sequence) -> List:
         return self._context[sequence.start:sequence.stop]
+
 
 class TextualSequenceContext(SequenceContext):
     def get_sequence_text(self, sequence) -> str:
         return ''
-
-
-# Others  contexts
 
 
 class CharSequenceContext(TextualSequenceContext):
@@ -252,14 +247,8 @@ class TokenSequenceContext(TextualSequenceContext):
             ])
 
 
-class BILUOAnnotationSequenceContext(SequenceContext):
-    def __init__(self, context: List[BILUOAnnotation]):
-        super().__init__(context)
-
-
-
-
 # Special Sequences
+
 
 class ContextualizedSequence(Sequence):
     def materialize(self):
@@ -267,10 +256,10 @@ class ContextualizedSequence(Sequence):
 
 
 class TextualSequence(ContextualizedSequence):
-    def in_context(self):
+    def in_context(self) -> str:
         return self._context.represent_sequence_in_context(self)
 
-    def get_text(self):
+    def get_text(self) -> str:
         return self._context.get_sequence_text(self)
     text = property(get_text)
 
@@ -282,7 +271,7 @@ class TokenSequence(TextualSequence):
             raise ValueError(f"TokenSequence expect a list of string")
         return TokenSequence(0, len(tokens), TokenSequenceContext(list(map(lambda token: Token(token), tokens))))
 
-    def __init__(self, start: int, stop: Optional[int] = None, context: TokenSequenceContext=None):
+    def __init__(self, start: int, stop: int, context: TokenSequenceContext):
         super().__init__(start, stop, context)
 
 
@@ -293,18 +282,9 @@ class CharSequence(TextualSequence):
             raise ValueError(f"CharSequence expect a string")
         return CharSequence(0, len(text), CharSequenceContext(list(map(lambda char: Char(char), text))))
 
-    def __init__(self, start: int, stop: Optional[int] = None, context: CharSequenceContext = None):
+    def __init__(self, start: int, stop: int, context: CharSequenceContext):
         super().__init__(start, stop, context)
 
 
-class BILUOAnnotationSequence(ContextualizedSequence):
-    @staticmethod
-    def new(annotations: [Tuple[str, ...]]) -> "BILUOAnnotationSequence":
-        if type(annotations) is not list:
-            raise ValueError(f"BILUOAnnotationSequence expect a list")
-        annotations = list(map(lambda annotation: BILUOAnnotation.new(*annotation), annotations))
-        return BILUOAnnotationSequence(0, len(annotations), BILUOAnnotationSequenceContext(annotations))
 
-    def __init__(self, start: int, stop: Optional[int], context: BILUOAnnotationSequenceContext):
-        super().__init__(start, stop, context)
 

@@ -5,14 +5,14 @@ from bert.tokenization import FullTokenizer
 
 
 text = "  She lives in Lindström, Minnesota  "
+s1 = CharSequence.new(text)
+
+# We create the token sequence and their annotations
 tokenizer = FullTokenizer('vocab.txt')
 tokens = tokenizer.tokenize(text)
+s2 = TokenSequence.new(tokens)
 
-# We create sequences
-s1 = TokenSequence.new(tokens)
-s2 = CharSequence.new(text)
 
-# We create a sequence of annotations
 s3 = BILUOAnnotationSequence.new([
     ['O', 'O'],
     ['O', 'O'],
@@ -28,7 +28,9 @@ s3 = BILUOAnnotationSequence.new([
 ])
 
 # We create a magic transfer
-transfer = MagicTransfer(s1, s2)
+transfer = MagicTransfer(s2, s1)
+
+# We use the created transfer function to transfer our annotations
 s4 = transfer.apply(s3, plugin=BILUOPlugin())
 
 

@@ -18,7 +18,7 @@ class MagicTransfer(ContextualizedTransfer):
         normalized_target, t2 = _normalize(target)
         t2_inv = t2.invert()
 
-        t3 = lcs_transfer(normalized_source, normalized_target)
+        t3, error = lcs_transfer(normalized_source, normalized_target)
         t4 = SequenceTransfer.compose(t1, t3, t2_inv)
 
         if isinstance(source.context, TokenSequenceContext) or \
@@ -45,8 +45,3 @@ def _normalize(sequence:  Union[CharSequence, TokenSequence]):
     text4, t3 = remove_accents(text3)
     t = SequenceTransfer.compose(t1, t2, t3)
     return text4, t
-
-
-
-
-

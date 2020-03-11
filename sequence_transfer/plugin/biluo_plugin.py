@@ -2,9 +2,24 @@ from collections import namedtuple
 from typing import List, Tuple
 from sequence_transfer.sequence import Sequence, SequenceContext, ContextualizedSequence
 from sequence_transfer.sequence_transfer import SequenceTransferPlugin
-from itertools import product, zip_longest
+from itertools import product, zip_longest, groupby
 import uuid
 from pprint import pprint
+from collections import Counter
+
+
+# Codes
+
+
+B = "B"
+I = "I"
+L = "L"
+U = "U"
+O = "O"
+CODES = {B, I, L, U, O}
+
+
+# Exceptions
 
 
 class InvalidBILUOAtomException(Exception):
@@ -27,45 +42,14 @@ class BILUOSequenceSizeMismatchException(Exception):
         super().__init__(f"BILUO Sequence size mismatch")
 
 
-BILUOAnnotationAtom = namedtuple("BILUOAnnotationAtom", ["level", "code", "tag", "entity_id"])
+BILUOAnnotationAtom = namedtuple("BILUOAnnotationAtom", ["code", "tag", "entity_id"])
 
 
-class BILUOAnnotation:
-    B = "B"
-    I = "I"
-    L = "L"
-    U = "U"
-    O = "O"
-    CODES = {B, I, L, U, O}
-
-    @staticmethod
-    def new(annotation: str, *args: str):
-        atoms = []
-        for annotation in (annotation, *args):
-            if annotation == BILUOAnnotation.O:
-                atoms.append(
-                    BILUOAnnotationAtom(code=BILUOAnnotation.O, tag=""))
-            else:
-                code, tag = annotation.split('-')
-                if code not in BILUOAnnotation.CODES:
-                    raise InvalidBILUOCodeException(code)
-                atoms.append(
-                    BILUOAnnotationAtom(code=code, tag=tag))
-        return BILUOAnnotation(*atoms)
-
-    def __init__(self, atom: BILUOAnnotationAtom, *args: BILUOAnnotationAtom):
-        self._atoms = [atom, *args]
-
-    def get_atoms(self) -> List[BILUOAnnotationAtom]:
-        return self._atoms
-    atoms = property(get_atoms)
+def hack_repr(x):
+    return f"{x.code}-{x.tag}"
 
 
-B = BILUOAnnotation.B
-I = BILUOAnnotation.I
-L = BILUOAnnotation.L
-U = BILUOAnnotation.U
-O = BILUOAnnotation.O
+BILUOAnnotationAtom.__repr__ = hack_repr
 
 
 def extract_code_tag(atom):
@@ -76,8 +60,7 @@ def extract_code_tag(atom):
             code, tag = atom.split('-')
         except Exception:
             raise InvalidBILUOAtomException(atom)
-
-        if code not in BILUOAnnotation.CODES:
+        if code not in CODES:
             raise InvalidBILUOCodeException(code)
         return code, tag
 
@@ -113,7 +96,6 @@ class BILUOAnnotationSequence(ContextualizedSequence):
                         raise InvalidBILUOSequenceException(i)
                     tmp = str(uuid.uuid4())
                 atom = BILUOAnnotationAtom(
-                    level=level,
                     code=code,
                     tag=tag,
                     entity_id=tmp
@@ -138,6 +120,23 @@ class BILUOPlugin(SequenceTransferPlugin):
             raise ValueError("Annotation sequence size != transfer source size")  # TODO custom exception
 
         inverse_transfer = transfer.invert()
+        materialize = annotation_sequence.context.materialize_sequence
+
+        # print(list(map(inverse_transfer.apply, transfer.target)))
+
+        x = map(handle_conflicts,
+                list(map(materialize,
+                         map(inverse_transfer.apply, transfer.target))))
+
+        pprint(list(x))
+
+        exit()
+        for x in zip_longest(z):
+            print(x)
+            print("-----------")
+        exit()
+        pprint(list(x))
+        exit()
         for target_sequence in transfer.target:
             matching_source_sequence = inverse_transfer.apply(target_sequence)
             s = annotation_sequence.context.materialize_sequence(matching_source_sequence)
@@ -176,36 +175,72 @@ class BILUOPlugin(SequenceTransferPlugin):
         # print(transferred_annotations)
 
 
+def handle_conflicts(atoms_list: List[Tuple[BILUOAnnotationAtom]]):
+    # TODO THINK about a better policy:  Handle U priority?
+    if not atoms_list:
+        return []
+
+    # Democratic policy
+    print(atoms_list)
+    for entity_id, groups in  groupby(atoms_list, key=lambda atom: atom.entity_id):
+        print(entity_id, groups)
 
 
-
-
-
-
-
-
-
-class BILUOTransferException:
-    def __init__(self):
-        super().__init__("TransferException")
-
-
-
-
-
-def transfer_biluo(x: str, nb_slots: int) -> str:
-    if nb_slots == 0:
-        raise BILUOTransferException()
-    else:
-        if x == I or x == O:
-            return x * nb_slots
-        if x == B:
-            return B + I*(nb_slots - 1)
-        elif x == L:
-            return I * (nb_slots - 1) + L
-        elif x == U:
-            if nb_slots == 1:
-                return U
+def handle_not_annotated(atoms: List[BILUOAnnotationAtom]) -> List[BILUOAnnotationAtom]:
+    new_atoms = []
+    for i, atom in enumerate(atoms):
+        if atom is None:
+            if i == 0 or i == len(atoms) - 1:
+                new_atoms.append(
+                    BILUOAnnotationAtom(
+                        code=O,
+                        tag='',
+                        entity_id=None))
             else:
-                return B + I * (nb_slots - 2) + L
+                previous_atom = atoms[i - 1]
+                next_atom = atoms[i + 1]
+                if previous_atom.entity_id == next_atom.entity_id:
+                    new_atoms.append(
+                        BILUOAnnotationAtom(
+                            code=I,
+                            tag=previous_atom.tag,
+                            entity_id=previous_atom.entity_id
+                        )
+                    )
+                else:
+                    new_atoms.append(
+                        BILUOAnnotationAtom(
+                            code=O,
+                            tag='',
+                            entity_id=None))
+        else:
+            new_atoms.append(atom)
 
+    return new_atoms
+
+
+def recode_atoms(atoms: List[BILUOAnnotationAtom]) -> List[BILUOAnnotationAtom]:
+    new_atoms = []
+    for entity_id, atoms in groupby(atoms, key=id):
+        atoms = list(atoms)
+        if entity_id is None:
+            new_atoms.extend(atoms)
+        else:
+            for i, atom in enumerate(atoms):
+                if i == 0:
+                    if len(atoms) == 1:
+                        code = U
+                    else:
+                        code = B
+                elif i == len(atoms) - 1:
+                    code = L
+                else:
+                    code = I
+
+                new_atoms.append(
+                    BILUOAnnotationAtom(
+                        code=code,
+                        tag=atom.tag,
+                        entity_id=atom.tag.entity_id
+                    ))
+    return new_atoms

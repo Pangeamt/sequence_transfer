@@ -8,7 +8,7 @@ def is_entity(text: str, index: int) -> bool:
     for i in range(index, index + 10):
         if i < len(text):
             if text[i] == ";":
-                return True, i
+                return True, i + 1
             if text[i] == " ":
                 break
     return False, -1
@@ -16,21 +16,21 @@ def is_entity(text: str, index: int) -> bool:
 
 def remove_html_entities(text: str) -> Tuple[str, SequenceTransfer]:
     output = html.unescape(text)
-    j = 0
-    counter = 0
-    transfers = []
 
-    for i, char in enumerate(text):
-        if counter:
-            counter -= 1
-        elif char == "&":
+    i = 0
+    j = 0
+    transfers = []
+    while i < len(text):
+        char = text[i]
+        if char == "&":
             is_html, fin = is_entity(text, i)
             if is_html:
-                transfers.append((Sequence(i, fin + 1), Sequence(j)))
+                transfers.append((Sequence(i, fin), Sequence(j)))
+                i = fin
                 j += 1
-                counter = fin - i
         else:
             transfers.append((Sequence(i), Sequence(j)))
+            i += 1
             j += 1
 
     transfer = SequenceTransfer(
@@ -38,4 +38,5 @@ def remove_html_entities(text: str) -> Tuple[str, SequenceTransfer]:
         Sequence(0, len(output)),
         transfers
     )
+    # print(transfer.debug_in_text(text, output))
     return output, transfer

@@ -49,7 +49,7 @@ def hack_repr(x):
     return f"{x.code}-{x.tag}"
 
 
-BILUOAnnotationAtom.__repr__ = hack_repr
+# BILUOAnnotationAtom.__repr__ = hack_repr
 
 
 def extract_code_tag(atom):
@@ -124,66 +124,46 @@ class BILUOPlugin(SequenceTransferPlugin):
 
         # print(list(map(inverse_transfer.apply, transfer.target)))
 
-        x = map(handle_conflicts,
+
+        x = list(map(handle_conflicts,
                 list(map(materialize,
-                         map(inverse_transfer.apply, transfer.target))))
+                     map(inverse_transfer.apply, transfer.target)))))
 
-        pprint(list(x))
-
+        pprint(x)
         exit()
-        for x in zip_longest(z):
-            print(x)
-            print("-----------")
-        exit()
-        pprint(list(x))
-        exit()
-        for target_sequence in transfer.target:
-            matching_source_sequence = inverse_transfer.apply(target_sequence)
-            s = annotation_sequence.context.materialize_sequence(matching_source_sequence)
-            print(target_sequence, matching_source_sequence, s)
+        y = handle_not_annotated(x)
+        z = recode_atoms (y)
 
-        # atoms_by_level = list(zip(
-        #     *[annotation.materialize()[0].atoms for annotation in annotation_sequence]))
-        #
-        # id_by_level = {}
-        # for level, atoms in atoms_by_level:
-        #     tmp = None
-        #     id_by_level[level] = []
-        #     for atom in atoms:
-        #         if atom.code = 'B'
 
-        # transferred_sequences = [
-        #     transfer.apply(annotation) for annotation in annotation_sequence
-        # ]
-        # print(transferred_sequences)
-        # for match in matches:
-        #     source_annotation_seqence = annotation_sequence(match[0])
-        #     transferred_annotations = []
-        #     transferred = transfer.apply(annotation)
-        #     print(f"\n num letter {transferred.size}--------------")
-        #     atoms = annotation.materialize()[0].atoms
-        #     z = zip(*map(
-        #         lambda atom: list(map(
-        #             lambda x: BILUOAnnotationAtom(x[0], x[1]),
-        #             product(transfer_biluo(atom.code, transferred.size), [atom.tag])))
-        #         , atoms))
-        #
-        #     z2 = map(lambda atom_list: BILUOAnnotation(*atom_list), z)
-        #     for x in z2:
-        #         transferred_annotations.append(x)
-        #
-        # print(transferred_annotations)
 
 
 def handle_conflicts(atoms_list: List[Tuple[BILUOAnnotationAtom]]):
-    # TODO THINK about a better policy:  Handle U priority?
-    if not atoms_list:
-        return []
+    """
+    TODO THINK about a better policy:  Handle U priority?
+    :param atoms_list: [
+                   (atom1_level1, atom2_level2, atom3_level3),
+                   (atom4_level1, atom5_level2, atom6_level3),
+                   etc...
+                    ]s
+    :return:
+    """
 
-    # Democratic policy
-    print(atoms_list)
-    for entity_id, groups in  groupby(atoms_list, key=lambda atom: atom.entity_id):
-        print(entity_id, groups)
+    out = []
+    for level, atoms_by_level in enumerate(zip(*list(map(list, atoms_list)))):
+        best_entity_id = None
+        best_tag = None
+        best_num_occurence = 0
+        grouped = list(groupby(atoms_by_level, key=lambda atom: (atom.entity_id, atom.tag)))
+        for (entity_id, tag), atoms in grouped:
+            num_atoms = len(list(atoms))
+            if num_atoms >= best_num_occurence:
+                best_entity_id = entity_id
+                best_tag = tag
+                best_num_occurence = num_atoms
+        best_atom = BILUOAnnotationAtom(code=I, tag=best_tag, entity_id=best_entity_id)
+        out.append(best_atom)
+    return out
+
 
 
 def handle_not_annotated(atoms: List[BILUOAnnotationAtom]) -> List[BILUOAnnotationAtom]:
@@ -215,11 +195,16 @@ def handle_not_annotated(atoms: List[BILUOAnnotationAtom]) -> List[BILUOAnnotati
                             entity_id=None))
         else:
             new_atoms.append(atom)
+    print("xxxxx")
+    print(new_atoms)
 
     return new_atoms
 
 
 def recode_atoms(atoms: List[BILUOAnnotationAtom]) -> List[BILUOAnnotationAtom]:
+
+    print("XXXXXXXXXXXXxx", atoms)
+
     new_atoms = []
     for entity_id, atoms in groupby(atoms, key=id):
         atoms = list(atoms)
@@ -241,6 +226,6 @@ def recode_atoms(atoms: List[BILUOAnnotationAtom]) -> List[BILUOAnnotationAtom]:
                     BILUOAnnotationAtom(
                         code=code,
                         tag=atom.tag,
-                        entity_id=atom.tag.entity_id
+                        entity_id=atom.entity_id
                     ))
     return new_atoms

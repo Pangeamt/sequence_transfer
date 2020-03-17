@@ -7,7 +7,7 @@ def is_separator(text: str, index: int) -> bool:
     if text[index + 1] == "#":
         return True
     else:
-        return False, -1
+        return False
 
 
 def remove_bert_separator(text: str) -> Tuple[str, SequenceTransfer]:

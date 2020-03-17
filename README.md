@@ -1,7 +1,7 @@
 # Sequence transfer
 
-The sequence transfer library is part of the MAPA anonymisation project funded by the European Commission.
-
+The sequence transfer library is part of the MAPA anonymisation project, funded by the European Commission.
+The library 
 ## Introduction
 
 ```python

@@ -32,11 +32,12 @@ class NotContextualizedSequenceException(Exception):
 class Sequence:
     def __init__(self, start: int, stop: int, context: "SequenceContext" = None):
         """
-        A  sequence is a discrete interval, with the particularity of being closed on the left and open on the right.
+        A sequence is a pair of number (n,p) with n<=p. The equal sign has his importance.
+        Formally, the set of all sequences is defined as: S = {(n,p) ∈  ℤ², n<=p}
 
-        Let 's suppose a sequence of consecutive numbers: 3 4 5 6 7 8 9 10 11
-        Sequence(4,7) =  4 5 6 = [4 7[ ... An sequence_transfer is open on the right so 7 is excluded!
-        Sequence(4,4) = nothing = [4 4[ ... it's empty but positioned!
+        A sequence [n,p[ is intrinsically as we said it before: 2 numbers, but it 's equivalent to
+        a sequence of numbers from n to p (with p excluded). For example [2 8[ is equivalent to the sequence
+        2 3 4 5 6 7. But this equivalence is broken when n=p.
 
         :param start: Where the sequence start
         :param stop: Where the sequence stop (not included)
@@ -251,16 +252,20 @@ class TokenSequenceContext(TextualSequenceContext):
 
 
 class ContextualizedSequence(Sequence):
-    def materialize(self):
-        return self._context.context[self.start: self.stop]
+    def materialize(self, sequence: Optional[Sequence] = None):
+        if sequence is None:
+            sequence = self
+        return self._context.context[sequence.start: sequence.stop]
 
 
 class TextualSequence(ContextualizedSequence):
     def in_context(self) -> str:
-        return self._context.represent_sequence_in_context(self)
+        return self._context.represent_sequence_in_context(self)  # TODO Check
 
-    def get_text(self) -> str:
-        return self._context.get_sequence_text(self)
+    def get_text(self, sequence: Optional[Sequence] = None) -> str:
+        if sequence is None:
+            sequence = self
+        return self._context.get_sequence_text(sequence)
     text = property(get_text)
 
 

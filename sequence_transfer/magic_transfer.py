@@ -62,7 +62,7 @@ def _normalize(sequence:  Union[CharSequence, TokenSequence]):
 class TransferError:
     def __init__(self, src: str, tgt: str, errors: Tuple) -> None:
         table = PrettyTable(
-            ["SRC UNIC", "SRC CHAR", "", "TGT CHAR", "TGT UNIC"]
+            ["SRC UNICODE", "SRC CHAR", "", "TGT CHAR", "TGT UNICODE"]
         )
         num_errors = 0
         for error in errors:

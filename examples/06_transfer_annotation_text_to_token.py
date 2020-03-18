@@ -1,7 +1,6 @@
 from bert.tokenization import FullTokenizer
 from sequence_transfer.sequence import CharSequence, TokenSequence
-from sequence_transfer.entity_annotation_transfer import EntityAnnotationSequence
-from sequence_transfer.plugin.entity_annotation_transfer_plugin import EntityAnnotationTransferPlugin
+from sequence_transfer.plugin.entity_annotation_transfer_plugin import EntityAnnotationTransferPlugin, EntityAnnotationSequence
 from sequence_transfer.magic_transfer import MagicTransfer
 
 

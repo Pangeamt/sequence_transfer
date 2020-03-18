@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, TypeVar
 from sequence_transfer.sequence import Sequence
 from prettytable import PrettyTable
 
@@ -97,7 +97,7 @@ class SequenceTransfer:
         """
 
         if plugin is not None:
-            return plugin.apply(self, Sequence)
+            return plugin.apply(self, source_sequence)
 
         source_sequence.raise_if_not_in(self._source)
 

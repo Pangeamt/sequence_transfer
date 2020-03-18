@@ -1,7 +1,7 @@
 from typing import List
 from sequence_transfer.sequence_transfer import SequenceTransfer
 from sequence_transfer.sequence import Sequence
-from sequence_transfer.sequence_element import Token
+from sequence_transfer.sequence import Token
 
 
 def token_to_text_transfer(tokens: List[Token]):

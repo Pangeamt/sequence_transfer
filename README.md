@@ -39,7 +39,7 @@ transferred = transfer1.apply(s)
 print(f"Text: {transferred.text}")
 # --> Text: Zoé
 print(f"Offsets: {transferred.start}, {transferred.stop}")
-# --> Offsets: Zoé
+# --> Offsets: 11, 14
 ```
 
 What we did between BERT tokens and the source text can be achieved between any pair of sequences. For example between BERT tokens and Moses Tokens:
@@ -48,24 +48,25 @@ What we did between BERT tokens and the source text can be achieved between any 
 transfer2 = MagicTransfer(bert_tokens, moses_tokens) 
 transferred = transfer2.apply(s)
 print(f"Offsets: {transferred.start}, {transferred.stop}")
+# --> Offsets: 2, 3
 ```
 
-It's possible to print the mapping:
+It's possible to see the transfers:
 
 ```python
 transfer2.debug()
-#|Src slice|Index src|Text src|    |Text tgt|Index tgt|Tgt slice|
-#|:-------:|:-------:|:------:|:--:|:------:|:-------:|:-------:|
-#|  [0:2]  |    0    |   j    |--->|J&apos; |    0    |  [0:1]  |
-#|         |    1    |   '    |    |        |         |         |
-#|         |         |        |    |        |         |         |
-#|  [2:4]  |    2    |  ado   |--->| adore  |    1    |  [1:2]  |
-#|         |    3    |  ##re  |    |        |         |         |
-#|         |         |        |    |        |         |         |
-#|  [4:6]  |    4    |   zo   |--->|  Zoé   |    2    |  [2:3]  |
-#|         |    5    |  ##e   |    |        |         |         |
-#|         |         |        |    |        |         |         |
-#|  [6:7]  |    6    |   !    |--->|   !    |    3    |  [3:4]  |
+# |Src slice|Index src|Text src|    |Text tgt|Index tgt|Tgt slice|
+# |:-------:|:-------:|:------:|:--:|:------:|:-------:|:-------:|
+# |  [0:2]  |    0    |   j    |--->|J&apos; |    0    |  [0:1]  |
+# |         |    1    |   '    |    |        |         |         |
+# |         |         |        |    |        |         |         |
+# |  [2:4]  |    2    |  ado   |--->| adore  |    1    |  [1:2]  |
+# |         |    3    |  ##re  |    |        |         |         |
+# |         |         |        |    |        |         |         |
+# |  [4:6]  |    4    |   zo   |--->|  Zoé   |    2    |  [2:3]  |
+# |         |    5    |  ##e   |    |        |         |         |
+# |         |         |        |    |        |         |         |
+# |  [6:7]  |    6    |   !    |--->|   !    |    3    |  [3:4]  |
 
 ```
 

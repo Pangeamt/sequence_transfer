@@ -5,7 +5,7 @@ The main goal of the library is to make easy, the transfer of annotations betwee
 
 
 ## Sequence & transfers 
-Transfering annotations between BERT and Moses tokens or between BERT tokens and the text source, requires a kind of "mapping". Thoses "mappings, in the Sequence Transfer library, are called transfers.
+Transfering annotations between BERT and Moses tokens or between BERT tokens and the text source, requires a kind of "mapping". Thoses "mappings", in the Sequence Transfer library, are called transfers.
 
 A transfer operate over sequences, sequences of chars or sequences of tokens. But let's start with an example:
 
@@ -33,12 +33,18 @@ print(f"text: {transferred.text}")
 print(f"Offsets: {transferred.start}, {transferred.stop}")
 ```
 
-The transfer we did between BERT tokens and the source text can be achieved between BERT tokens and Moses Tokens:
+What we did between BERT tokens and the source text can be achieved between any pair of sequences. For example between BERT tokens and Moses Tokens:
 
 ```python
 transfer2 = MagicTransfer(bert_tokens, moses_tokens) 
 transferred = transfer2.apply(s)
 print(f"Offsets: {transferred.start}, {transferred.stop}")
+```
+
+It's possible to print the mapping:
+
+```python
+transfer2.debug()
 ```
 
 |Src slice|Index src|Text src|    |Text tgt|Index tgt|Tgt slice|

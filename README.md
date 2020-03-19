@@ -51,7 +51,7 @@ print(f"Offsets: {transferred.start}, {transferred.stop}")
 # --> Offsets: 2, 3
 ```
 
-It's possible to see the transfers:
+To have a representation of the "mapping" done by the transfer function:
 
 ```python
 transfer2.debug()

@@ -4,7 +4,7 @@ The sequence transfer library is part of the MAPA anonymisation project, funded 
 The main goal of the library is to make easy, the transfer of annotations between different representations of a text produced by tokenization. 
 
 
-## Sequence & transfers 
+## Sequences & transfers 
 Transfering annotations between BERT and Moses tokens or between BERT tokens and the text source, requires a kind of "mapping". Thoses "mappings", in the Sequence Transfer library, are called transfers.
 
 A transfer operate over sequences, sequences of chars or sequences of tokens. But let's start with an example:
@@ -23,7 +23,7 @@ moses_detokenized = CharSequence.new("J'adore Zoé !")  # Sequence of chars
 
 ```
 
-Now we can create a transfer function between any pair of sequences. For example, let's suppose we want to know what are the "images" of the  5th and 6th BERT tokens 'zo' and '##e' in the source text
+Now we can create a transfer function between any pair of sequences. For example, let's suppose we want to know what are the "images" of the  5th and 6th BERT tokens 'zo' and '##e' in the source text:
 
 ```python
 s = bert_tokens[4:6]  # We select the 5th and 6th BERT tokens
@@ -47,6 +47,7 @@ It's possible to print the mapping:
 transfer2.debug()
 ```
 
+```
 |Src slice|Index src|Text src|    |Text tgt|Index tgt|Tgt slice|
 |:-------:|:-------:|:------:|:--:|:------:|:-------:|:-------:|
 |  [0:2]  |    0    |   j    |--->|J&apos; |    0    |  [0:1]  |
@@ -59,6 +60,7 @@ transfer2.debug()
 |         |    5    |  ##e   |    |        |         |         |
 |         |         |        |    |        |         |         |
 |  [6:7]  |    6    |   !    |--->|   !    |    3    |  [3:4]  |
+```
 
 
 ## The sequence transfer library

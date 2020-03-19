@@ -1,46 +1,45 @@
-# Sequence transfer
+# Sequence Transfer
 
 The sequence transfer library is part of the MAPA anonymisation project, funded by the European Commission.
-The library 
-## Introduction
+The main goal of the library is to make easy, the transfer of annotations between different representations of a text produced by tokenization. 
+
+
+## Sequence & transfers 
+Transfering annotations between BERT and Moses tokens or between BERT tokens and the text source, requires a kind of "mapping". Thoses "mappings, in the Sequence Transfer library, are called transfers.
+
+A transfer operate over sequences, sequences of chars or sequences of tokens. But let's start with an example:
+
+
+First We create some sequences:
 
 ```python
-# A simple sentence
-text = '  I live in  Lindström ! '  
+from sequence_transfer.sequence import CharSequence, TokenSequence
+from sequence_transfer.magic_transfer import MagicTransfer
 
-# We create TokenSeqence from tokens produced by Moses and BERT
-moses_tokens = TokenSeqence.new(['I', 'live', 'in', 'Lindström', '!']) 
-bert_tokens = TokenSeqence.new((['i', 'live', 'in', 'li', '##nds', '##tro', '##m', '!'])
+text = CharSequence.new("  J'adore  Zoé!  ")  # Sequence of chars
+bert_tokens = TokenSequence.new(['j', "'", 'ado', '##re', 'zo', '##e', '!'])  # Sequence of tokens
+moses_tokens = TokenSequence.new(['J&apos;', 'adore', 'Zoé', '!'])   # Sequence of tokens
+moses_detokenized = CharSequence.new("J'adore Zoé !")  # Sequence of chars
 
-# We create a transfer function
-transfer = MagicTransfer(moses_tokens, bert_tokens)
-
-# Now we can find the BERT tokens that correspond to the 4th Moses token 'Lindström' 
-transfered = transfer.apply(moses_tokens[3])
-print(transfered)
-# --->  ['li', '##nds', '##tro', '##m']
-
-# We can print the offsets of the transfered sequence
-print(f"Starts at: {transfered.start} and stops before: {transferred.stop}"
-# --->  "Starts at: 3 and stops before: 7
 ```
-To see the full mapping:
+
+Now we can create a transfer function between any pair of sequences. For example, let's suppose we want to know what are the "images" of the  5th and 6th BERT tokens 'zo' and '##e' in the source text
 
 ```python
-# Print the table below
-transfer.debug()
+s = bert_tokens[4:6]  # We select the 5th and 6th BERT tokens
+transfer1 = MagicTransfer(bert_tokens, text)  # We create a transfer function
+transferred = transfer1.apply(s)
+print(f"text: {transferred.text}")
+print(f"Offsets: {transferred.start}, {transferred.stop}")
 ```
 
-| src slice | src index |  src text |      | tgt text | tgt index | tgt slice |
-| ----------| --------- | --------- | ---- | -------- | ----------| ----------|
-|   [0:1]   |     0     |     I     | ---> |    i     |     0     |   [0:1]   |
-|   [1:2]   |     1     |    live   | ---> |   live   |     1     |   [1:2]   |
-|   [2:3]   |     2     |     in    | ---> |    in    |     2     |   [2:3]   |
-|   [3:4]   |     3     | Lindström | ---> |    li    |     3     |   [3:7]   |
-|           |           |           |      |  ##nds   |     4     |           |
-|           |           |           |      |  ##tro   |     5     |           |
-|           |           |           |      |   ##m    |     6     |           |
-|   [4:5]   |     4     |     !     | ---> |    !     |     7     |   [7:8]   |
+The transfer we did between BERT tokens and the source text can be achieved between BERT tokens and Moses Tokens:
+
+```python
+transfer2 = MagicTransfer(bert_tokens, moses_tokens) 
+transferred = transfer2.apply(s)
+print(f"Offsets: {transferred.start}, {transferred.stop}")
+```
 
 
 

@@ -15,7 +15,8 @@ First We create some sequences:
 ```python
 from sequence_transfer.sequence import CharSequence, TokenSequence
 from sequence_transfer.magic_transfer import MagicTransfer
-from sequence_transfer.plugin.entity_annotation_transfer_plugin import EntityAnnotationTransferPlugin, EntityAnnotationSequence
+from sequence_transfer.plugin.entity_annotation_transfer_plugin import EntityAnnotationTransferPlugin \
+    , EntityAnnotationSequence
 
 text = CharSequence.new("  J'adore  Zoé!  ")  # Sequence of chars
 bert_tokens = TokenSequence.new(['j', "'", 'ado', '##re', 'zo', '##e', '!'])  # Sequence of tokens
@@ -27,11 +28,18 @@ moses_detokenized = CharSequence.new("J'adore Zoé !")  # Sequence of chars
 Now we can create a transfer function between any pair of sequences. For example, let's suppose we want to know what are the "images" of the  5th and 6th BERT tokens 'zo' and '##e' in the source text:
 
 ```python
-s = bert_tokens[4:6]  # We select the 5th and 6th BERT tokens
-transfer1 = MagicTransfer(bert_tokens, text)  # We create a transfer function
+ # We select the 5th and 6th BERT tokens
+s = bert_tokens[4:6] 
+
+# We create a transfer function
+transfer1 = MagicTransfer(bert_tokens, text)  
+
+# We apply the transfer function to our sequence
 transferred = transfer1.apply(s)
-print(f"text: {transferred.text}")
+print(f"Text: {transferred.text}")
+# --> Text: Zoé
 print(f"Offsets: {transferred.start}, {transferred.stop}")
+# --> Offsets: Zoé
 ```
 
 What we did between BERT tokens and the source text can be achieved between any pair of sequences. For example between BERT tokens and Moses Tokens:
@@ -79,9 +87,6 @@ print(transferred_annotations.convert("biluo"))
 # ---> ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'B-PER', 'I-PER', 'L-PER', 'O', 'O', 'O'] 
 ```
 
-
-
-```
 
 ## The sequence transfer library
 

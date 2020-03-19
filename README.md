@@ -55,6 +55,7 @@ To have a representation of the "mapping" done by the transfer function:
 
 ```python
 transfer2.debug()
+
 # |Src slice|Index src|Text src|    |Text tgt|Index tgt|Tgt slice|
 # |:-------:|:-------:|:------:|:--:|:------:|:-------:|:-------:|
 # |  [0:2]  |    0    |   j    |--->|J&apos; |    0    |  [0:1]  |

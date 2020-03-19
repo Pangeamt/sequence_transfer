@@ -41,6 +41,18 @@ transferred = transfer2.apply(s)
 print(f"Offsets: {transferred.start}, {transferred.stop}")
 ```
 
+|Src slice|Index src|Text src|    |Text tgt|Index tgt|Tgt slice|
+|:-------:|:-------:|:------:|:--:|:------:|:-------:|:-------:|
+|  [0:2]  |    0    |   j    |--->|J&apos; |    0    |  [0:1]  |
+|         |    1    |   '    |    |        |         |         |
+|         |         |        |    |        |         |         |
+|  [2:4]  |    2    |  ado   |--->| adore  |    1    |  [1:2]  |
+|         |    3    |  ##re  |    |        |         |         |
+|         |         |        |    |        |         |         |
+|  [4:6]  |    4    |   zo   |--->|  Zoé   |    2    |  [2:3]  |
+|         |    5    |  ##e   |    |        |         |         |
+|         |         |        |    |        |         |         |
+|  [6:7]  |    6    |   !    |--->|   !    |    3    |  [3:4]  |
 
 
 ## The sequence transfer library

@@ -15,6 +15,7 @@ First We create some sequences:
 ```python
 from sequence_transfer.sequence import CharSequence, TokenSequence
 from sequence_transfer.magic_transfer import MagicTransfer
+from sequence_transfer.plugin.entity_annotation_transfer_plugin import EntityAnnotationTransferPlugin, EntityAnnotationSequence
 
 text = CharSequence.new("  J'adore  Zoé!  ")  # Sequence of chars
 bert_tokens = TokenSequence.new(['j', "'", 'ado', '##re', 'zo', '##e', '!'])  # Sequence of tokens
@@ -45,23 +46,42 @@ It's possible to print the mapping:
 
 ```python
 transfer2.debug()
-```
+#|Src slice|Index src|Text src|    |Text tgt|Index tgt|Tgt slice|
+#|:-------:|:-------:|:------:|:--:|:------:|:-------:|:-------:|
+#|  [0:2]  |    0    |   j    |--->|J&apos; |    0    |  [0:1]  |
+#|         |    1    |   '    |    |        |         |         |
+#|         |         |        |    |        |         |         |
+#|  [2:4]  |    2    |  ado   |--->| adore  |    1    |  [1:2]  |
+#|         |    3    |  ##re  |    |        |         |         |
+#|         |         |        |    |        |         |         |
+#|  [4:6]  |    4    |   zo   |--->|  Zoé   |    2    |  [2:3]  |
+#|         |    5    |  ##e   |    |        |         |         |
+#|         |         |        |    |        |         |         |
+#|  [6:7]  |    6    |   !    |--->|   !    |    3    |  [3:4]  |
 
 ```
-|Src slice|Index src|Text src|    |Text tgt|Index tgt|Tgt slice|
-|:-------:|:-------:|:------:|:--:|:------:|:-------:|:-------:|
-|  [0:2]  |    0    |   j    |--->|J&apos; |    0    |  [0:1]  |
-|         |    1    |   '    |    |        |         |         |
-|         |         |        |    |        |         |         |
-|  [2:4]  |    2    |  ado   |--->| adore  |    1    |  [1:2]  |
-|         |    3    |  ##re  |    |        |         |         |
-|         |         |        |    |        |         |         |
-|  [4:6]  |    4    |   zo   |--->|  Zoé   |    2    |  [2:3]  |
-|         |    5    |  ##e   |    |        |         |         |
-|         |         |        |    |        |         |         |
-|  [6:7]  |    6    |   !    |--->|   !    |    3    |  [3:4]  |
+
+## Annotation transfers
+Now we can transfer annotations:
+```python
+annotations = EntityAnnotationSequence.new([
+    "O",
+    "O",
+    "O",
+    "O",
+    "B-PER",
+    "L-PER",
+    "O",
+], "biluo")
+
+transferred_annotations = transfer1.apply(annotations, plugin=EntityAnnotationTransferPlugin())
+print(transferred_annotations.convert("biluo"))
+# ---> ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'B-PER', 'I-PER', 'L-PER', 'O', 'O', 'O'] 
 ```
 
+
+
+```
 
 ## The sequence transfer library
 

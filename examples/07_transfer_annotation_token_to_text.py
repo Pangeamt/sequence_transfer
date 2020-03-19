@@ -15,6 +15,7 @@ token_sequence = TokenSequence.new(tokens)
 
 # We create a magic transfer
 transfer = MagicTransfer(token_sequence, char_sequence)
+
 # We create an annotation transfer
 entity_annotation_transfer = EntityAnnotationTransfer(transfer)
 
@@ -31,7 +32,6 @@ annotations = EntityAnnotationSequence.new([
     'I-LOC',
     'L-LOC',
 ], "biluo")
-
 
 # We use the created transfer function to transfer our annotations
 transferred_annotations = entity_annotation_transfer.apply(annotations).convert("biluo")

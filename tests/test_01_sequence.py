@@ -36,7 +36,7 @@ class TestSequence(unittest.TestCase):
     def test_iter(self):
         s1 = Sequence(5, 8)
         for s in s1:
-            assert s == Sequence(s.start)
+            assert s == Sequence(s.start, s.start + 1)
 
     def test_subsequence(self):
         s1 = Sequence(1, 4)
@@ -75,8 +75,9 @@ class TestSequence(unittest.TestCase):
         assert s2.start == 1
         assert s2.stop == 4
 
-        with self.assertRaises(KeyError):
-            s2 = s1[-1:3]
+        s2 = s1[-1:3]
+        assert s2.start == 3
+        assert s2.stop == 4
 
         s2 = s1[:-1]
         assert s2.start == 1

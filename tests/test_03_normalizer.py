@@ -14,14 +14,14 @@ class TestNormalizer(unittest.TestCase):
         assert '\r' not in t2
         assert '\t' not in t2
 
-        assert transfer.apply(Sequence(0)) == Sequence(0, 0)
-        assert transfer.apply(Sequence(1)) == Sequence(0)
-        assert transfer.apply(Sequence(2)) == Sequence(1)
-        assert transfer.apply(Sequence(3)) == Sequence(2, 2)
-        assert transfer.apply(Sequence(4)) == Sequence(2, 2)
-        assert transfer.apply(Sequence(5)) == Sequence(2, 2)
-        assert transfer.apply(Sequence(6)) == Sequence(2, 2)
-        assert transfer.apply(Sequence(7)) == Sequence(2, 3)
-        assert transfer.apply(Sequence(8)) == Sequence(3, 4)
-        assert transfer.apply(Sequence(9)) == Sequence(4, 4)
+        assert transfer.apply(Sequence(0, 1)) == Sequence(0, 0)
+        assert transfer.apply(Sequence(1, 2)) == Sequence(0, 1)
+        assert transfer.apply(Sequence(2, 3)) == Sequence(1, 2)
+        assert transfer.apply(Sequence(3, 4)) == Sequence(2, 2)
+        assert transfer.apply(Sequence(4, 5)) == Sequence(2, 2)
+        assert transfer.apply(Sequence(5, 6)) == Sequence(2, 2)
+        assert transfer.apply(Sequence(6, 7)) == Sequence(2, 2)
+        assert transfer.apply(Sequence(7, 8)) == Sequence(2, 3)
+        assert transfer.apply(Sequence(8, 9)) == Sequence(3, 4)
+        assert transfer.apply(Sequence(9, 10)) == Sequence(4, 4)
 

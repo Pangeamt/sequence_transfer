@@ -11,8 +11,7 @@ A transfer operates over sequences: sequences of chars or sequences of tokens.
 
 To clarify the main ideas, here is an example:
 
-
-First We create some sequences:
+First, We create some sequences:
 
 ```python
 from sequence_transfer.sequence import CharSequence, TokenSequence
@@ -90,13 +89,6 @@ transferred_annotations = transfer1.apply(annotations, plugin=EntityAnnotationTr
 print(transferred_annotations.convert("biluo"))
 # ---> ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'B-PER', 'I-PER', 'L-PER', 'O', 'O', 'O'] 
 ```
-
-
-## The sequence transfer library
-
-What we have done between tokens can be achieved between tokens and the text source itself. It is possible to find in the source the offsets of the text corresponding to any sequence or subsequence of tokens.
-
-We are working on a multilevel BILUO annotation transfer function that will be able to transfer BILUO codes from tokens to the appropriate characters of the source. This implies that we will be able to annotate a text, letter by letter, without altering it at all (even a space).
 
 ### The magic transfer architecture
 The MagicTransfer is one of the transfer functions available on the library (all transfer functions are composable and reversible). The "Magic" transfer is still in BETA and requires further testing. Nevertheless, because of its architecture we think that it should be quite strong very soon.

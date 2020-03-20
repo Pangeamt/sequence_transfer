@@ -134,7 +134,7 @@ class Sequence:
         sequence_type = type(self)
         if type(key) is int:
             new_start = self._start + key
-            sequence = sequence_type(new_start, context=self._context)
+            sequence = sequence_type(new_start, new_start + 1, context=self._context)
             if not sequence.is_subsequence(self):
                 raise KeyError()
             return sequence

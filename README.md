@@ -11,7 +11,7 @@ A transfer operates over sequences: sequences of chars or sequences of tokens.
 
 To clarify the main ideas, here is an example:
 
-First, We create some sequences:
+First, we create some sequences:
 
 ```python
 from sequence_transfer.sequence import CharSequence, TokenSequence

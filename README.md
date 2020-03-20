@@ -5,7 +5,7 @@ The main goal of the library is to make it easy to transfer annotations between 
 
 
 ## Sequences & transfers 
-Transfering annotations between BERT and Moses tokens or between BERT tokens and the text source requires a kind of "mapping". Thoses "mappings" are called transfers in the Sequence Transfer library.
+Transfering annotations between BERT and Moses tokens or between BERT tokens and the text source requires a kind of "mapping". Thoses "mappings" are called transfers in the this library.
 
 A transfer operates over sequences: sequences of chars or sequences of tokens. 
 
@@ -26,7 +26,7 @@ moses_detokenized = CharSequence.new("J'adore Zoé !")  # Sequence of chars
 
 ```
 
-Now we can create a transfer function between any pair of sequences. For example, suppose we want to know "images" of the 5th and 6th BERT tokens 'zo' and '##e' in the source text:
+Now we can create a transfer function between any pair of thoses sequences. For example, suppose we want to know wich charchaters of the text source correspond to the 5th and 6th BERT tokens 'zo' and '##e' in the source text:
 
 ```python
  # We select the 5th and 6th BERT tokens
@@ -90,7 +90,7 @@ print(transferred_annotations.convert("biluo"))
 # ---> ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'B-PER', 'I-PER', 'L-PER', 'O', 'O', 'O'] 
 ```
 
-### The magic transfer architecture
+## The magic transfer architecture
 The MagicTransfer is one of the transfer functions available on the library (all transfer functions are composable and reversible). The "Magic" transfer is still in BETA and requires further testing. Nevertheless, because of its architecture we think that it should be quite strong very soon.
 
 The Magic transfer is based on a supervised renormalization of both texts: the source and its tokenized form. Supervised means that each renormalization function returns a transfer function which tracks the changes it made.

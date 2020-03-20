@@ -1,7 +1,10 @@
 from typing import Union, List, Tuple, Optional
 from sequence_transfer.sequence_transfer import SequenceTransfer, SequenceTransferPlugin
 from sequence_transfer.sequence import ContextualizedSequence
-from prettytable import PrettyTable
+from pytablewriter import MarkdownTableWriter
+from pytablewriter.style import Style
+from itertools import zip_longest
+from typing import Any
 
 
 class ContextualizedTransfer(SequenceTransfer):
@@ -11,8 +14,8 @@ class ContextualizedTransfer(SequenceTransfer):
                  matches: List[Tuple[ContextualizedSequence, ContextualizedSequence]]):
         super().__init__(source, target, matches)
 
-    def apply(self, sequence: ContextualizedSequence, plugin: Optional[SequenceTransferPlugin] = None) -> \
-            ContextualizedSequence:
+    def apply(self, sequence: Any, plugin: Optional[SequenceTransferPlugin] = None) -> \
+            Any:
         if plugin is not None:
             return plugin.apply(self, sequence)
 
@@ -25,9 +28,13 @@ class ContextualizedTransfer(SequenceTransfer):
         return ContextualizedTransfer(self._target, self._source, matches)
 
     def debug(self):
-        table = PrettyTable(["SRC SLICE", "INDEX SRC", "TEXT SRC", "", "TEXT TGT", "INDEX TGT", "TGT SLICE"])
         parallel_matches = self._parallelize()
+        writer = MarkdownTableWriter()
+        writer.table_name = "debug"
+        writer.headers = ["Src slice", "Index src", "Text src", "", "Text tgt", "Index tgt", "Tgt slice"]
+        writer.column_styles = [Style(align='center')]*7
 
+        rows = []
         for source_sequence, target_sequence in parallel_matches:
             source_sequence.context = self._source.context
             target_sequence.context = self._target.context
@@ -38,7 +45,22 @@ class ContextualizedTransfer(SequenceTransfer):
             col5 = "\n".join([s.context.get_sequence_text(s) for s in target_sequence])
             col6 = "\n".join([str(i) for i in target_sequence.iter_index()])
             col7 = target_sequence.slice_representation()
-            table.add_row([
-                col1, col2, col3, col4, col5, col6, col7
-            ])
-        print(table)
+            for a, b, c, d, e, f, g in zip_longest(
+                    [col1],
+                    col2.split('\n'),
+                    col3.split('\n'),
+                    [col4],
+                    col5.split('\n'),
+                    col6.split('\n'),
+                    [col7]):
+                rows.append([
+                    a, b, c, d, e, f, g
+                ])
+            rows.append([""]*7)
+        rows.pop()
+        writer.value_matrix = rows
+        writer.write_table()
+
+
+
+

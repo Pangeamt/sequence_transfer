@@ -1,3 +1,4 @@
+pytablewriter
 colorama
 PrettyTable
 sacremoses

@@ -1,0 +1,24 @@
+# A simple sentence
+text = "  J'adore  Zoé!  "
+
+# We create sequences of tokens from tokens produced by Moses and BERT
+moses_tokens = TokenSeqence.new(['I', 'live', 'in', 'Lindström', '!'])
+bert_tokens = TokenSeqence.new((['i', 'live', 'in', 'li', '##nds', '##tro', '##m', '!'])
+
+# We create a transfer function
+transfer = MagicTransfer(moses_tokens, bert_tokens)
+
+# Now we can find the BERT tokens that correspond to the 4th Moses token 'Lindström'
+transfered = transfer.apply(moses_tokens[3])
+print(transfered)
+# --->  ['li', '##nds', '##tro', '##m']
+
+# We can print the offsets of the transfered sequence
+print(f"Starts at: {transfered.start} and stops before: {transferred.stop}"
+# --->  "Starts at: 3 and stops before: 7
+```
+To see the full mapping:
+
+```python
+# Print the table below
+transfer.debug()

@@ -16,7 +16,7 @@ print(f"Sequence `{sub.text}` starts at {sub.start} and stops at: {sub.stop}")
 sub = s[11:15]  # correspond to the Nina
 print(f"Sequence `{sub.text}` starts at {sub.start} and stops at: {sub.stop}")
 
-sub = s[-4:]   # get the last for char
+sub = s[-4:]   # get the last foor chars
 print(f"Sequence `{sub.text}` starts at {sub.start} and stops at: {sub.stop}")
 
 # 03 - Iterating over a CharSequence object create a subsequence of size 1 that correspond to each letter:

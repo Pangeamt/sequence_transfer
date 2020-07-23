@@ -10,7 +10,7 @@ or
 
 ## Introduction
 
-## Preliminaries: Playing with sequence...
+## Preliminaries: Playing with sequences...
 
 
 ## Part 1: Mono level annotations 

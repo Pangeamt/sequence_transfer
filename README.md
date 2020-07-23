@@ -1,7 +1,9 @@
 # Sequence Transfer
 
-The sequence transfer library is part of the MAPA anonymisation project, funded by the European Commission.
+The sequence transfer library developed by [Pangeanic](https://www.pangeanic.com/) is part of the MAPA anonymisation project, funded by the European Commission.
 The main goal of the library is to make it easy to transfer annotations between different representations of the same text, for example by tokenizing it.
+
+
 
 
 ## Sequences & transfers 

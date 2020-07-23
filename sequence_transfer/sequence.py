@@ -221,15 +221,15 @@ class Char:
 
 
 class SequenceContext:
-    def __init__(self, context: List[Any]):
-        self._context = context
+    def __init__(self, content: List[Any]):
+        self._content = content
 
-    def get_context(self):
-        return self._context
-    context = property(get_context)
+    def get_content(self):
+        return self._content
+    content = property(get_content)
 
     def materialize_sequence(self, sequence: Sequence) -> List:
-        return self._context[sequence.start:sequence.stop]
+        return self._content[sequence.start:sequence.stop]
 
 
 class TextualSequenceContext(SequenceContext):
@@ -238,11 +238,11 @@ class TextualSequenceContext(SequenceContext):
 
 
 class CharSequenceContext(TextualSequenceContext):
-    def __init__(self, context: List[Char]):
-        super().__init__(context)
+    def __init__(self, content: List[Char]):
+        super().__init__(content)
 
     def get_sequence_text(self, sequence: Sequence):
-        elements_as_text = map(lambda x: x.text, self._context[sequence.start: sequence.stop])
+        elements_as_text = map(lambda x: x.text, self._content[sequence.start: sequence.stop])
         return "".join(elements_as_text)
 
     def represent_sequence(self, sequence: Sequence) -> str:
@@ -253,16 +253,16 @@ class CharSequenceContext(TextualSequenceContext):
         return "".join([
                 self.represent_sequence(Sequence(0, sequence.start)),
                 Fore.CYAN + self.represent_sequence(sequence) + Style.RESET_ALL,
-                self.represent_sequence(Sequence(sequence.stop, len(self._context))),
+                self.represent_sequence(Sequence(sequence.stop, len(self._content))),
             ])
 
 
 class TokenSequenceContext(TextualSequenceContext):
-    def __init__(self, context: List[Token]):
-        super().__init__(context)
+    def __init__(self, content: List[Token]):
+        super().__init__(content)
 
     def get_sequence_text(self, sequence):
-        elements_as_text = map(lambda x: x.text, self._context[sequence.start: sequence.stop])
+        elements_as_text = map(lambda x: x.text, self._content[sequence.start: sequence.stop])
         return " ".join(elements_as_text)
 
     def represent_sequence(self, sequence: Sequence) -> str:
@@ -272,7 +272,7 @@ class TokenSequenceContext(TextualSequenceContext):
         return " ".join([
                 self.represent_sequence(Sequence(0, sequence.start)),
                 Fore.CYAN + self.represent_sequence(sequence) + Style.RESET_ALL,
-                self.represent_sequence(Sequence(sequence.stop, len(self._context))),
+                self.represent_sequence(Sequence(sequence.stop, len(self._content))),
             ])
 
 
@@ -283,7 +283,7 @@ class ContextualizedSequence(Sequence):
     def materialize(self, sequence: Optional[Sequence] = None):
         if sequence is None:
             sequence = self
-        return self._context.context[sequence.start: sequence.stop]
+        return self._context.content[sequence.start: sequence.stop]
 
 
 class TextualSequence(ContextualizedSequence):

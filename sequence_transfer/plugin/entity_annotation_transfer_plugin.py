@@ -1,7 +1,9 @@
+from inspect import signature
+
 from sequence_transfer.magic_transfer import MagicTransfer
 from typing import List, Tuple, Optional, Iterator
 from sequence_transfer.sequence import  SequenceContext, ContextualizedSequence
-from itertools import groupby
+from itertools import groupby, filterfalse
 from sequence_transfer.sequence_transfer import SequenceTransferPlugin
 import uuid
 
@@ -105,8 +107,13 @@ class EntityAnnotationSequence(ContextualizedSequence):
 
     def convert(self, annotation_sequence_format):
         if annotation_sequence_format == EntityAnnotationSequence.BILUO:
-            return EntityAnnotationSequence.entity_annotations_to_biluo_annotations(self._context.context)
+            return EntityAnnotationSequence.entity_annotations_to_biluo_annotations(self._context.content)
         return
+
+    def get_annotated_entities(self) -> List["EntityAnnotationSequence"]:
+        z = filterfalse(lambda signature,y :  signature != NOT_ANNOTATED.signature,
+            groupby(self._context.content, key=lambda a: a.signature))
+        print(z)
 
     @staticmethod
     def biluo_annotations_to_entity_annotations(biluo_annotations: List[str]):
@@ -231,7 +238,7 @@ class EntityAnnotationTransferPlugin(SequenceTransferPlugin):
                             undefined -= 1
                     new_annotations.append(annotation)
 
-        # Remaining not annotated
+        # Remaining undefined
         for i in range(undefined):
             new_annotations.append(NOT_ANNOTATED)
 

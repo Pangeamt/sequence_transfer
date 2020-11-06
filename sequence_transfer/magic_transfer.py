@@ -32,7 +32,7 @@ class MagicTransfer(ContextualizedTransfer):
             compose = []
             if isinstance(source.context, TokenSequenceContext):
                 compose.append(
-                    token_to_text_transfer(source.context.context)
+                    token_to_text_transfer(source.context.content)
                 )
             compose.append(t4)
             if isinstance(target.context, TokenSequenceContext):

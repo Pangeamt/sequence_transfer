@@ -3,4 +3,4 @@ colorama
 PrettyTable
 sacremoses
 bert-tensorflow
-tensorflow==1.15.2
+tensorflow==2.6.4
